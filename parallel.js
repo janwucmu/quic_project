@@ -36,8 +36,7 @@ async function openYoutubeVid(browser, index) {
 
     // plays the video (HTML can be found on website through inspect)
     await page.click(
-        "#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > \
-        div.ytp-left-controls > button[aria-label='Play (k)'"
+        "#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls > button[aria-label='Play (k)'"
     );
 
     // plays the video for 10 secs (1 sec = 1000)
