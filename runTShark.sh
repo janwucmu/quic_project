@@ -9,10 +9,10 @@ sudo tshark -i eno4 -f "udp port 443 or udp port 80" -w /packets.pcap &
 # start obtaining screenshots
 node parallel.js
 
-# kill the first tshark 
+# kill the first tshark process
 pidSudo=`ps -ef | grep "sudo tshark" | grep -v grep | awk '{print $2}'`
 sudo kill -9 $pidSudo
 
-# kill the second tshark 
+# kill the second tshark process
 pidTshark=`ps -ef | grep tshark | grep -v grep | awk '{print $2}'`
 sudo kill -9 $pidTshark
