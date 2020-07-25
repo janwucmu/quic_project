@@ -12,10 +12,16 @@
 // importing Puppeteer
 const puppeteer = require('puppeteer');
 
+// importing file system
+const fs = require('fs');
+
+const block = require('@cliqz/adblocker-puppeteer');
+const fetch = require('cross-fetch');
+
+var blocker;
+
 // list of youtube videos' url to play and screenshot
-const youtube_videos = ['https://www.youtube.com/watch?v=suctgz7V7X0',
-                        'https://www.youtube.com/watch?v=-dgDE3pNeDo',
-                        'https://www.youtube.com/watch?v=yTMPJvXhDaU'];
+var youtube_videos = [];
 
 /**
  * @brief Open one youtube video with a link from the list, youtube_videos.
@@ -32,18 +38,27 @@ async function openYoutubeVid(browser, index) {
         height: 1600,
         deviceScaleFactor: 1,
     });
+
+    await blocker.enableBlockingInPage(page);
+
     await page.goto(youtube_videos[index]);
+    await page.waitForSelector("#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls > button[aria-label='Play (k)'", visible=true, time=3000
+    ).catch(function () {
+        return;
+    });
 
     // plays the video (HTML can be found on website through inspect)
     await page.click(
         "#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls > button[aria-label='Play (k)'"
-    );
+    ).catch(function () {
+        return;
+    });
 
-    // plays the video for 10 secs (1 sec = 1000)
+    // plays the video for additional 10 secs (1 sec = 1000)
     await page.waitFor(10000);
 
     // video file name for the screen shot
-    var vid_name = await 'vid' + String(index) + '.png';
+    var vid_name = 'screenshots/vid' + String(index) + '.png';
     await page.screenshot({ path: vid_name });
 }
 
@@ -68,9 +83,9 @@ async function inParallel(browser) {
     // call functions to open each one
     var list_open = [];
     for (var i = 0; i < youtube_videos.length; i++) {
-        await list_open.push(openYoutubeVid(browser, i));
+        list_open.push(openYoutubeVid(browser, i));
     }
-    let you = list_open;
+    var you = list_open;
 
     // open all pages in parallel
     await Promise.all(you);
@@ -84,7 +99,7 @@ async function inParallel(browser) {
  */
 function endTime(startTime) {
     // obtains the current time
-    endTime = new Date();
+    var endTime = new Date();
     
     // calculating the difference between end time and start time
     var timeDiff = endTime - startTime; //in ms 
@@ -111,6 +126,10 @@ async function runYoutube(parallel) {
         headless: true
     });
 
+    blocker = await block.PuppeteerBlocker.fromLists(fetch, [
+        'https://easylist.to/easylist/easylist.txt'
+    ]);
+
     if (parallel) {
         // open all pages in parallel
         await inParallel(browser);
@@ -127,5 +146,24 @@ async function runYoutube(parallel) {
     endTime(startTime);
 }
 
-// runs main
-runYoutube(true);
+/**
+ * @brief Runs the main script. Parses through the list of urls from 
+ * 'trendingList.txt' and calls all functions
+ *
+ * @param[in] browser - object Browser
+ */
+function main() {
+    fs.readFile('trendingList.txt', (err, data) => { 
+        if (err) throw err; 
+
+        // organize each url into a list
+        data = data.toString();
+        youtube_videos = data.split("\n");
+    });
+
+    var parallel = true;
+    runYoutube(parallel);
+}
+
+// run main
+main();
