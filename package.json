@@ -1,0 +1,24 @@
+{
+  "name": "quic_project",
+  "version": "1.0.0",
+  "description": "Tracking Quic Traffic",
+  "main": "parallel.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janwucmu/quic_project.git"
+  },
+  "author": "Janabelle",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/janwucmu/quic_project/issues"
+  },
+  "homepage": "https://github.com/janwucmu/quic_project#readme",
+  "dependencies": {
+    "@cliqz/adblocker-puppeteer": "^1.17.0",
+    "cross-fetch": "^3.0.5",
+    "puppeteer": "^5.2.1"
+  }
+}
