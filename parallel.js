@@ -42,20 +42,9 @@ async function openYoutubeVid(browser, index) {
     await blocker.enableBlockingInPage(page);
 
     await page.goto(youtube_videos[index]);
-    await page.waitForSelector("#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls > button[aria-label='Play (k)'", visible=true, time=3000
-    ).catch(function () {
-        return;
-    });
 
-    // plays the video (HTML can be found on website through inspect)
-    await page.click(
-        "#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls > button[aria-label='Play (k)'"
-    ).catch(function () {
-        return;
-    });
-
-    // plays the video for additional 10 secs (1 sec = 1000)
-    await page.waitFor(10000);
+    // plays the video for additional 20 secs (1 sec = 1000)
+    await page.waitFor(20000);
 
     // video file name for the screen shot
     var vid_name = 'screenshots/vid' + String(index) + '.png';
