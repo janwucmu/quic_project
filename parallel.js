@@ -15,9 +15,11 @@ const puppeteer = require('puppeteer');
 // importing file system
 const fs = require('fs');
 
+// importing for ad blocker
 const block = require('@cliqz/adblocker-puppeteer');
 const fetch = require('cross-fetch');
 
+// list of ads to block
 var blocker;
 
 // list of youtube videos' url to play and screenshot
@@ -39,14 +41,30 @@ async function openYoutubeVid(browser, index) {
         deviceScaleFactor: 1,
     });
 
+    // enable ad blocker
     await blocker.enableBlockingInPage(page);
 
+    // go to url
     await page.goto(youtube_videos[index]);
 
-    // plays the video for additional 20 secs (1 sec = 1000)
-    await page.waitFor(20000);
+    // selector
+    var selector = "#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls > button[aria-label='Play (k)'";
 
-    // video file name for the screen shot
+    // wait for play button selector for 0.25 seconds
+    await page.waitForSelector(selector, visible=true, time=250
+    ).catch(function () {
+        return;
+    });
+
+    // plays the video (HTML can be found on website through inspect)
+    await page.click(selector).catch(function () {
+                                        return;
+                                    });
+
+    // plays the video for additional 30 secs (1 sec = 1000)
+    await page.waitFor(30000);
+
+    // video file name for the screenshot
     var vid_name = 'screenshots/vid' + String(index) + '.png';
     await page.screenshot({ path: vid_name });
 }
@@ -115,6 +133,7 @@ async function runYoutube(parallel) {
         headless: true
     });
 
+    // get the list of ad to block
     blocker = await block.PuppeteerBlocker.fromLists(fetch, [
         'https://easylist.to/easylist/easylist.txt'
     ]);
@@ -142,6 +161,7 @@ async function runYoutube(parallel) {
  * @param[in] browser - object Browser
  */
 function main() {
+    // read all urls
     fs.readFile('trendingList.txt', (err, data) => { 
         if (err) throw err; 
 
@@ -150,7 +170,16 @@ function main() {
         youtube_videos = data.split("\n");
     });
 
-    var parallel = true;
+    // parse through args to run either parallel or series
+    var myArgs = process.argv.slice(2);
+    var parallel;
+    
+    if (myArgs[0] == "series") {
+        parallel = false;
+    }
+    else {
+        parallel = true;
+    }
     runYoutube(parallel);
 }
 
