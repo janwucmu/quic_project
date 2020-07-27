@@ -10,7 +10,7 @@ import googleapiclient.discovery
 import googleapiclient.errors
 
 # number of urls from the trending page
-MAXRESULTS = 50
+MAXRESULTS = 20
 
 """
 Organizing the urls and storing it into a text file, 'trendingList.txt'
@@ -68,17 +68,21 @@ def main():
     if api_key == None:
         return
 
+    # access youtube
     youtube = googleapiclient.discovery.build(
         api_service_name, api_version, developerKey=api_key)
 
+    # list out all requests for these url videos
     request = youtube.videos().list(
         part="id",
         chart="mostPopular",
         maxResults=MAXRESULTS,
         regionCode="US"
     )
+    # execute each request
     response = request.execute()
 
+    # write all responses into a file
     writingFile(response)
 
 if __name__ == "__main__":
