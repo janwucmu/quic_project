@@ -11,18 +11,18 @@ p_s=""
 path=""
 pcap=".pcap"
 
-if [ $1 == "tcp" ];
+if [[ $1 == "tcp" ]];
 then
     echo "Capturing TCP"
-    packets="/tcp_"
+    packets="pcapFiles/tcp_"
     com="tcp"
 else
     echo "Capturing QUIC"
-    packets="/quic_"
+    packets="pcapFiles/quic_"
     com="udp port 443 or udp port 80"
 fi
 
-if [ $2 == "series" ];
+if [[ $2 == "series" ]];
 then
     echo "Running Series"
     p_s="series"
@@ -34,6 +34,7 @@ fi
 file="${packets}${p_s}${pcap}"
 
 # launch tshark in the background detecting traffic and storing it in a pcap file
+# sudo tshark -i eno4 -f "$com" -w "$file" &
 sudo tshark -i eno4 -f "$com" -w "$file" &
 
 # start obtaining screenshots
