@@ -85,19 +85,6 @@ def main():
     # read pcap file
     pkts = rdpcap("pcapFiles/quic_parallel.pcap")
 
-    # entire hex for the pkt
-    pkts_hex = {}
-
-    for i in range(3): #TODO change to len of pkts
-        byte_hex = hexlify(bytes(pkts[i]))
-        string = str(byte_hex, 'utf-8')
-        lst = []
-        for j in range(0, len(string), 2):
-            lst.append(string[j:j+2])
-        pkts_hex[0] = lst
-
-
-
     # open text file for hex and ascii
     f = open("pkts_header/hexdump.txt", 'w+')
 
