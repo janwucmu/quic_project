@@ -47,26 +47,8 @@ async function openYoutubeVid(browser, index) {
     // go to url
     await page.goto(youtube_videos[index]);
 
-    // selector
-    var selector = "#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls > button[aria-label='Play (k)'";
-
-    // wait for play button selector for 0.25 seconds
-    await page.waitForSelector(selector, visible=true, time=250
-    ).catch(function () {
-        return;
-    });
-
-    // plays the video (HTML can be found on website through inspect)
-    await page.click(selector).catch(function () {
-                                        return;
-                                    });
-
     // plays the video for additional 30 secs (1 sec = 1000)
     await page.waitFor(30000);
-
-    // video file name for the screenshot
-    var vid_name = 'screenshots/vid' + String(index) + '.png';
-    await page.screenshot({ path: vid_name });
 }
 
 /**
@@ -127,10 +109,12 @@ async function runYoutube(parallel) {
 
     // launching puppeteer with arguments
     a = ['--no-sandbox',
-        '--enable-quic'];
+        '--enable-quic',
+        '--disable-gpu'];
     const browser = await puppeteer.launch({
         args: a,
-        headless: true
+        headless: true,
+        executablePath: "../Default/chrome"
     });
 
     // get the list of ad to block
@@ -162,7 +146,7 @@ async function runYoutube(parallel) {
  */
 function main() {
     // read all urls
-    fs.readFile('trendingList.txt', (err, data) => { 
+    fs.readFile('top50.txt', (err, data) => { 
         if (err) throw err; 
 
         // organize each url into a list
